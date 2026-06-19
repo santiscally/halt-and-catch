@@ -1,0 +1,10 @@
+# Caddy: TLS automático (Let's Encrypt) para el dominio y reverse proxy al
+# frontend (nginx), que a su vez sirve la SPA y proxya /api al backend.
+#
+# Opcional: para recibir avisos de vencimiento, agregá arriba de todo un bloque:
+#   { email tu@correo.com }
+
+{$DOMAIN} {
+	encode zstd gzip
+	reverse_proxy frontend:80
+}

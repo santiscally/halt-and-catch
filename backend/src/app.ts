@@ -2,6 +2,7 @@ import express, { type NextFunction, type Request, type Response } from 'express
 import cookieParser from 'cookie-parser'
 import helmet from 'helmet'
 import type { DB } from './db'
+import { config } from './config'
 import { notasRouter } from './routes/notas'
 import { authRouter } from './routes/auth'
 import { adminRouter } from './routes/admin'
@@ -10,8 +11,8 @@ import { rateLimit } from './rateLimit'
 export function createApp(db: DB): express.Express {
   const app = express()
 
-  // Detrás de nginx: confiar en el primer proxy para que req.ip sea correcto (rate limit).
-  app.set('trust proxy', 1)
+  // Detrás de proxy: confiar en N saltos para que req.ip sea el real (rate limit).
+  app.set('trust proxy', config.trustProxy)
 
   app.use(helmet())
   app.use(express.json({ limit: '256kb' }))

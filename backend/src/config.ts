@@ -36,4 +36,7 @@ export const config = {
   cookieName: 'hc_session',
   cookieSecure: process.env.COOKIE_SECURE === 'true',
   sessionHours: 12,
+  // Cantidad de proxies de confianza por delante (para que req.ip sea el real).
+  // 1 = solo nginx (compose base). 2 = Caddy + nginx (deploy con HTTPS).
+  trustProxy: parseInt(process.env.TRUST_PROXY || '1', 10),
 }
