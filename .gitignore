@@ -4,6 +4,7 @@ node_modules/
 # builds
 dist/
 frontend/dist/
+*.tsbuildinfo
 
 # datos locales (SQLite)
 backend/data/

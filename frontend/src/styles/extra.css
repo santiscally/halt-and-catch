@@ -249,3 +249,44 @@
 }
 .admin-badge-publicado { background: #e7efe2; color: #3a6b34; }
 .admin-badge-borrador { background: #efe7d8; color: #8a6a2f; }
+
+/* ---------- "powered by <s/a>" (footer) ----------
+   La píldora usa la paleta crema/chocolate/cobre del sitio. El logo <s/a> lleva
+   la identidad de Simple Apps: navy #092F70 (su azul marino primario, para
+   fondos claros) en General Sans Bold (la tipografía de logo de la marca).
+   text-transform/letter-spacing se resetean porque .footer-bottom es uppercase. */
+@font-face {
+  font-family: 'General Sans';
+  src: url('/fonts/general-sans-700.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+.powered-by {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  background: var(--cream-deep);
+  border: 1px solid var(--cream-line);
+  border-radius: 20px;
+  text-decoration: none;
+  text-transform: none;
+  letter-spacing: normal;
+  font-family: var(--font-sans);
+  transition: background 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+}
+.powered-by:hover {
+  background: #fff;
+  border-color: var(--copper);
+  transform: translateY(-2px);
+}
+.powered-text { color: var(--muted); font-size: 0.6875rem; }
+.powered-logo {
+  font-family: 'General Sans', var(--font-sans);
+  font-weight: 700;
+  color: #092f70;
+  font-size: 0.9375rem;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}

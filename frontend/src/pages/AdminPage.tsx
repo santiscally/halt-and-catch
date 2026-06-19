@@ -12,6 +12,7 @@ import {
 } from '../lib/api'
 import type { EstadoNota, Nota } from '../types'
 import { fmtFecha } from '../lib/format'
+import { Footer } from '../components/Footer'
 
 type Auth = 'checking' | 'out' | 'in'
 
@@ -40,19 +41,25 @@ export function AdminPage() {
       .catch(() => setAuth('out'))
   }, [])
 
+  let content
   if (auth === 'checking') {
-    return (
+    content = (
       <main className="admin admin-center">
         <p className="admin-muted">Cargando…</p>
       </main>
     )
+  } else if (auth === 'out') {
+    content = <LoginView onLogged={() => setAuth('in')} />
+  } else {
+    content = <PanelView onLogout={() => setAuth('out')} />
   }
 
-  if (auth === 'out') {
-    return <LoginView onLogged={() => setAuth('in')} />
-  }
-
-  return <PanelView onLogout={() => setAuth('out')} />
+  return (
+    <>
+      {content}
+      <Footer />
+    </>
+  )
 }
 
 // ---------------- Login ----------------

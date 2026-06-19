@@ -71,11 +71,16 @@ export function Footer() {
         </div>
         <div className="footer-bottom">
           <span>© 2026 Halt &amp; Catch · Todos los derechos reservados</span>
-          <div className="footer-bottom-links">
-            <a href="#">Privacidad</a>
-            <a href="#">Términos</a>
-            <a href="#">Hecho con criterio en Buenos Aires</a>
-          </div>
+          <a
+            href="https://simpleapps.com.ar"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="powered-by"
+            aria-label="powered by Simple Apps"
+          >
+            <span className="powered-text">powered by</span>
+            <span className="powered-logo">{'<s/a>'}</span>
+          </a>
         </div>
       </div>
     </footer>
