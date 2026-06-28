@@ -6,13 +6,8 @@ export function Footer() {
       <div className="container">
         <div className="footer-top">
           <div className="footer-brand">
-            <Link to="/" className="nav-logo" style={{ gap: 14, flexShrink: 0 }}>
-              <img
-                src="/img/logo.png"
-                alt="Halt & Catch"
-                className="logo-img"
-                style={{ height: 84 }}
-              />
+            <Link to="/" className="nav-logo footer-logo">
+              <img src="/img/logo.png" alt="Halt & Catch" className="logo-img footer-logo-img" />
             </Link>
             <p className="footer-tagline">
               Consultoría en inteligencia de negocio, analytics y gestión estratégica.

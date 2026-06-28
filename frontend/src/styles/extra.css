@@ -83,30 +83,250 @@
 /* ---------- 404 ---------- */
 .notfound-copy { margin: 24px 0 36px; max-width: 42ch; font-size: 17px; line-height: 1.6; color: var(--muted); }
 
-/* ---------- menú móvil del nav ---------- */
-.nav-mobile-menu {
+/* ===================================================================
+   Menú móvil del nav (rediseñado) + responsive de la vista cliente.
+   El panel admin no se toca: solo afecta a las pantallas del cliente.
+   =================================================================== */
+
+/* ---------- botón hamburguesa (dos barras → X) ---------- */
+.nav-mobile-toggle {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  padding: 0;
+  background: none;
+  border: 1px solid var(--cream-line);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: border-color 0.25s ease, background 0.25s ease;
+}
+.nav-mobile-toggle:hover { border-color: var(--copper); }
+.nav-mobile-toggle .bar {
+  display: block;
+  width: 18px;
+  height: 1.6px;
+  border-radius: 2px;
+  background: var(--ink);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.25s ease;
+}
+.nav-mobile-toggle.open .bar:nth-child(1) { transform: translateY(3.3px) rotate(45deg); }
+.nav-mobile-toggle.open .bar:nth-child(2) { transform: translateY(-3.3px) rotate(-45deg); }
+@media (min-width: 1024px) { .nav-mobile-toggle { display: none; } }
+
+/* barras claras cuando el nav está transparente sobre el hero (y el menú cerrado) */
+.nav:not(.scrolled):not(.menu-open) .nav-mobile-toggle .bar { background: var(--cream); }
+
+/* con el menú abierto, la barra del nav se vuelve sólida para empalmar con el panel */
+.nav.menu-open {
   background: rgba(245, 241, 230, 0.98);
-  backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--cream-line);
-  padding: 4px 24px 18px;
+  backdrop-filter: blur(12px);
+  border-bottom-color: transparent;
 }
-.nav-mobile-menu a {
-  padding: 14px 2px;
-  font-size: 18px;
+/* `:not(.scrolled)` para ganar por especificidad a las reglas de global.css
+   `.nav:not(.scrolled) .nav-logo ...` (y no depender del orden de carga del CSS). */
+.nav.menu-open:not(.scrolled) .nav-logo .logo-img,
+.nav.menu-open:not(.scrolled) .nav-logo .bulb { filter: none; }
+.nav.menu-open:not(.scrolled) .nav-logo .wordmark { color: var(--chocolate); }
+.nav.menu-open:not(.scrolled) .nav-logo .wordmark .amp { color: var(--copper); }
+.nav.menu-open .nav-mobile-toggle { border-color: var(--cream-line); }
+.nav.menu-open .nav-mobile-toggle .bar { background: var(--ink); }
+
+/* ---------- backdrop oscuro detrás del menú ---------- */
+.nav-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  background: rgba(26, 20, 16, 0.45);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+.nav-backdrop.show { opacity: 1; visibility: visible; }
+@media (min-width: 1024px) { .nav-backdrop { display: none; } }
+
+/* ---------- panel desplegable ---------- */
+.nav-mobile-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  padding: 14px 20px max(20px, env(safe-area-inset-bottom));
+  background: rgba(245, 241, 230, 0.98);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border-top: 1px solid var(--cream-line);
+  border-radius: 0 0 22px 22px;
+  box-shadow: 0 26px 50px -26px rgba(26, 20, 16, 0.5);
+  transform: translateY(-14px);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.28s ease, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0.3s ease;
+}
+.nav-mobile-menu.open {
+  transform: translateY(0);
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+@media (min-width: 1024px) { .nav-mobile-menu { display: none; } }
+
+.nav-mobile-links { display: flex; flex-direction: column; }
+.nav-mobile-links a {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 15px 6px;
+  border-bottom: 1px solid var(--cream-line);
   color: var(--ink-soft);
-  border-bottom: 1px solid var(--cream-line);
+  font-size: 17px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  /* arranca apenas oculto para el fade escalonado al abrir */
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.3s ease, transform 0.3s ease, color 0.2s ease,
+    padding-left 0.25s ease;
 }
-.nav-mobile-menu a:last-child {
-  border-bottom: 0;
+.nav-mobile-links a:last-child { border-bottom: 0; }
+.nav-mobile-links a:hover,
+.nav-mobile-links a.active { color: var(--copper); padding-left: 12px; }
+.nav-mobile-links .nmm-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
   color: var(--copper);
+  width: 20px;
+  flex-shrink: 0;
+}
+.nav-mobile-links .nmm-label { flex: 1; }
+.nav-mobile-links .nmm-arrow {
+  width: 16px;
+  height: 16px;
+  color: var(--copper);
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.nav-mobile-links a:hover .nmm-arrow,
+.nav-mobile-links a.active .nmm-arrow { opacity: 1; transform: translateX(0); }
+
+.nav-mobile-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 16px 22px;
+  background: var(--chocolate);
+  color: var(--cream);
+  font-size: 14px;
   font-weight: 500;
+  letter-spacing: 0.03em;
+  border-radius: 999px;
+  /* mismo fade escalonado que los links */
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.3s ease, transform 0.3s ease, background 0.25s ease;
 }
-@media (min-width: 1024px) {
-  .nav-mobile-menu { display: none; }
+.nav-mobile-cta:hover { background: var(--ink); }
+.nav-mobile-cta svg { width: 15px; height: 15px; }
+
+/* aparición escalonada al abrir */
+.nav-mobile-menu.open .nav-mobile-links a,
+.nav-mobile-menu.open .nav-mobile-cta { opacity: 1; transform: translateY(0); }
+.nav-mobile-menu.open .nav-mobile-links a:nth-child(1) { transition-delay: 0.04s; }
+.nav-mobile-menu.open .nav-mobile-links a:nth-child(2) { transition-delay: 0.08s; }
+.nav-mobile-menu.open .nav-mobile-links a:nth-child(3) { transition-delay: 0.12s; }
+.nav-mobile-menu.open .nav-mobile-links a:nth-child(4) { transition-delay: 0.16s; }
+.nav-mobile-menu.open .nav-mobile-links a:nth-child(5) { transition-delay: 0.2s; }
+.nav-mobile-menu.open .nav-mobile-cta { transition-delay: 0.24s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-mobile-menu,
+  .nav-mobile-links a,
+  .nav-mobile-cta,
+  .nav-mobile-toggle .bar { transition: opacity 0.2s ease, visibility 0.2s ease; }
+  .nav-mobile-links a,
+  .nav-mobile-cta { transform: none; }
 }
+
+/* ===================================================================
+   Responsive — solo vista cliente (phones / tablet). El admin queda igual.
+   =================================================================== */
+
+/* red de seguridad: nada desborda horizontalmente.
+   `clip` (no `hidden`) evita romper el position:sticky del header del admin. */
+body { overflow-x: clip; }
+img { max-width: 100%; }
+
+/* la barra del nav debe quedar por encima del backdrop al abrir el menú */
+.nav-inner { position: relative; z-index: 3; }
+
+/* ----- nav en phones: solo logo + hamburguesa (el CTA vive en el menú) ----- */
+@media (max-width: 639px) {
+  .nav-inner { height: 64px; }
+  .nav-cta { display: none; }
+  .nav-logo { margin-right: 0; gap: 10px; }
+  .nav-logo .wordmark { font-size: 20px; }
+  .nav-logo .bulb { height: 32px; }
+}
+@media (max-width: 380px) {
+  .nav-logo .wordmark { font-size: 17px; }
+  .nav-logo .bulb { height: 28px; }
+}
+
+/* ----- hero en phones: ajusta el offset del nav más bajo y el titular ----- */
+@media (max-width: 639px) {
+  .hero-inner { padding-top: 92px; padding-bottom: 40px; }
+  .section.page-top { padding-top: 96px; }
+}
+@media (max-width: 560px) {
+  .hero-h1 { font-size: clamp(34px, 11vw, 60px); }
+  .hero-sub { margin-top: 20px; }
+  .hero-actions { margin-top: 28px; gap: 14px; }
+}
+
+/* ----- footer en resoluciones apretadas: achica logo y textos ----- */
+.footer-logo { gap: 14px; flex-shrink: 0; }
+.footer-logo .footer-logo-img { height: 72px; }
+@media (max-width: 600px) {
+  .footer { padding: 44px 0 28px; }
+  .footer-top { gap: 32px; padding-bottom: 36px; }
+  .footer-logo .footer-logo-img { height: 50px; }
+  .footer-brand { gap: 18px; }
+  .footer-tagline { font-size: 13px; max-width: none; }
+  .footer-contact-block h4,
+  .footer-col h4 { margin-bottom: 16px; }
+  .footer-contact { gap: 12px 20px; }
+  .footer-contact li a,
+  .footer-contact li > span.fc-text { font-size: 13.5px; gap: 11px; }
+  .footer-contact .fc-ico { width: 30px; height: 30px; }
+  .footer-contact .fc-ico svg { width: 15px; height: 15px; }
+  .footer-bottom { margin-top: 24px; font-size: 10px; letter-spacing: 0.05em; gap: 14px; }
+}
+@media (max-width: 380px) {
+  .footer-contact .fc-ico { width: 28px; height: 28px; }
+  .footer-bottom { font-size: 9px; }
+}
+
+/* ----- contenido de notas (CMS): evita que una palabra/URL larga desborde ----- */
+.note-title,
+.note-lead,
+.note-detail-title,
+.note-detail-body p { overflow-wrap: break-word; }
 
 /* ---------- panel admin (CMS) ---------- */
 .admin {

@@ -1,4 +1,4 @@
-import { useState, type MouseEvent } from 'react'
+import { useEffect, useRef, useState, type MouseEvent } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useScrollNav } from '../hooks/useScrollNav'
 
@@ -19,9 +19,31 @@ interface Props {
 
 export function Nav({ overHero = false, activeSection = null }: Props) {
   const [menuOpen, setMenuOpen] = useState(false)
+  const toggleRef = useRef<HTMLButtonElement>(null)
   const location = useLocation()
   const navigate = useNavigate()
   const scrolled = useScrollNav(overHero)
+
+  // Cierra el menú y devuelve el foco al botón (para teclado / lectores de pantalla).
+  const closeMenu = () => {
+    setMenuOpen(false)
+    toggleRef.current?.focus()
+  }
+
+  // Bloquea el scroll del body y permite cerrar con Escape mientras el menú móvil está abierto.
+  useEffect(() => {
+    if (!menuOpen) return
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeMenu()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => {
+      document.body.style.overflow = prev
+      window.removeEventListener('keydown', onKey)
+    }
+  }, [menuOpen])
 
   const goToSection = (e: MouseEvent, id: string) => {
     e.preventDefault()
@@ -44,7 +66,7 @@ export function Nav({ overHero = false, activeSection = null }: Props) {
   }
 
   return (
-    <header className={`nav${scrolled ? ' scrolled' : ''}`} id="nav">
+    <header className={`nav${scrolled ? ' scrolled' : ''}${menuOpen ? ' menu-open' : ''}`} id="nav">
       <div className="container nav-inner">
         <a href="/" className="nav-logo" aria-label="Halt & Catch inicio" onClick={goHome}>
           <img src="/img/bulb.png" alt="" className="bulb" />
@@ -75,30 +97,58 @@ export function Nav({ overHero = false, activeSection = null }: Props) {
         </a>
 
         <button
-          className="nav-mobile-toggle"
-          aria-label="Menú"
+          ref={toggleRef}
+          className={`nav-mobile-toggle${menuOpen ? ' open' : ''}`}
+          aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
           aria-expanded={menuOpen}
+          aria-controls="nav-mobile-menu"
           onClick={() => setMenuOpen((v) => !v)}
         >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-            <line x1="4" y1="8" x2="20" y2="8" />
-            <line x1="4" y1="16" x2="20" y2="16" />
-          </svg>
+          <span className="bar" />
+          <span className="bar" />
         </button>
       </div>
 
-      {menuOpen && (
-        <div className="nav-mobile-menu">
-          {SECTIONS.map((s) => (
-            <a key={s.id} href={`/#${s.id}`} onClick={(e) => goToSection(e, s.id)}>
-              {s.label}
+      <div
+        className={`nav-backdrop${menuOpen ? ' show' : ''}`}
+        onClick={closeMenu}
+        aria-hidden="true"
+      />
+
+      <div
+        className={`nav-mobile-menu${menuOpen ? ' open' : ''}`}
+        id="nav-mobile-menu"
+        aria-hidden={!menuOpen}
+      >
+        <nav className="nav-mobile-links" aria-label="Menú móvil">
+          {SECTIONS.map((s, i) => (
+            <a
+              key={s.id}
+              href={`/#${s.id}`}
+              className={activeSection === s.id ? 'active' : ''}
+              onClick={(e) => goToSection(e, s.id)}
+            >
+              <span className="nmm-num">{String(i + 1).padStart(2, '0')}</span>
+              <span className="nmm-label">{s.label}</span>
+              <svg className="nmm-arrow" aria-hidden="true">
+                <use href="#i-arrow" />
+              </svg>
             </a>
           ))}
-          <a href="https://wa.link/94wlfy" target="_blank" rel="noreferrer">
-            Agendar llamada
-          </a>
-        </div>
-      )}
+        </nav>
+        <a
+          href="https://wa.link/94wlfy"
+          className="nav-mobile-cta"
+          target="_blank"
+          rel="noreferrer"
+          onClick={() => setMenuOpen(false)}
+        >
+          Agendar llamada
+          <svg aria-hidden="true">
+            <use href="#i-arrow" />
+          </svg>
+        </a>
+      </div>
     </header>
   )
 }
