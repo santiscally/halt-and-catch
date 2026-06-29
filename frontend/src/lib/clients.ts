@@ -16,5 +16,5 @@ export const clients: Client[] = [
   { img: '/img/clients/09-farmacias-vilela.png', name: 'Farmacias Vilela' },
   { img: '/img/clients/10-simplicity.png', name: 'Simplicity' },
   { img: '/img/clients/11-healthy-mask.png', name: 'Healthy Mask' },
-  { img: '/img/clients/12-farmacias-central-oeste.png', name: 'Farmacias Central Oeste' },
+  { img: '/img/clients/12-the-b-company.png', name: 'The B Company' },
 ]
